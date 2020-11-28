@@ -137,15 +137,14 @@ const SignUp: React.FC = () => {
                   formRef.current?.submitForm();
                 }}
               />
+              <Button
+                onPress={() => {
+                  formRef.current?.submitForm();
+                }}
+              >
+                Cadastrar
+              </Button>
             </Form>
-
-            <Button
-              onPress={() => {
-                formRef.current?.submitForm();
-              }}
-            >
-              Entrar
-            </Button>
           </Container>
         </ScrollView>
       </KeyboardAvoidingView>

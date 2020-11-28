@@ -5,6 +5,10 @@ import { RectButton } from 'react-native-gesture-handler';
 
 import { VacinaProps } from '~/@types';
 
+interface VacinaContainerProps {
+  onPress: () => void;
+}
+
 export const Container = styled.View`
   flex: 1;
   background-color: #312e38;
@@ -48,7 +52,7 @@ export const VacinasListTitle = styled.Text`
   font-family: 'Roboto-Medium';
 `;
 
-export const VacinaContainer = styled(RectButton)`
+export const VacinaContainer = styled(RectButton)<VacinaContainerProps>`
   background: #3e3b47;
   border-radius: 10px;
   padding: 20px;

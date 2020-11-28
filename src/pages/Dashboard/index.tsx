@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { Alert } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -25,7 +26,12 @@ import {
   VacinaListFooter,
 } from './styles';
 
+import { VacinaProps } from '~/@types';
+
 const Dashboard: React.FC = () => {
+  const [vacinasArray, setVacinasArray] = useState<VacinaProps[]>([
+    ...api.vacinas,
+  ]);
   const navigation = useNavigation();
 
   // const [vacinas, setVacinas] = useState<VacinaProps[]>([]);
@@ -36,6 +42,69 @@ const Dashboard: React.FC = () => {
   // const navigateToProfile = useCallback(() => {
   //   navigate('Profile');
   // }, [navigate]);
+
+  const handleSetVacinado = useCallback(
+    (item: VacinaProps) => {
+      const newArray = vacinasArray.map((i) => {
+        if (i.id === item.id) {
+          // eslint-disable-next-line no-param-reassign
+          i.status = 'Vacinado';
+        }
+        return i;
+      });
+
+      setVacinasArray(newArray);
+    },
+    [vacinasArray],
+  );
+
+  const handleRemoveVacinado = useCallback(
+    (item: VacinaProps) => {
+      const newArray = vacinasArray.map((i) => {
+        if (i.id === item.id) {
+          // eslint-disable-next-line no-param-reassign
+          i.status = 'Pendente';
+        }
+        return i;
+      });
+
+      setVacinasArray(newArray);
+    },
+    [vacinasArray],
+  );
+
+  const handleVacina = useCallback(
+    (item: VacinaProps) => {
+      if (item.status !== 'Vacinado') {
+        Alert.alert(
+          'Atenção',
+          `O ${item.dependente} foi realmente recebeu a vacina de ${item.descricao}?`,
+          [
+            {
+              text: 'Não',
+              style: 'cancel',
+            },
+            { text: 'Sim', onPress: () => handleSetVacinado(item) },
+          ],
+          { cancelable: false },
+        );
+      } else {
+        Alert.alert(
+          'Atenção',
+          `Deseja realmente remover a vacina de ${item.descricao} do ${item.dependente}?`,
+          [
+            {
+              text: 'Não',
+              style: 'cancel',
+            },
+            { text: 'Sim', onPress: () => handleRemoveVacinado(item) },
+          ],
+          { cancelable: false },
+        );
+      }
+    },
+    [handleSetVacinado, handleRemoveVacinado],
+  );
 
   return (
     <Container>
@@ -55,14 +124,14 @@ const Dashboard: React.FC = () => {
       </Header>
 
       <VacinasList
-        data={api.vacinas}
+        data={vacinasArray}
         keyExtractor={(vacinas) => String(vacinas.id)}
         ListHeaderComponent={
           <VacinasListTitle>Próximas Vacinas</VacinasListTitle>
         }
         ListFooterComponent={<VacinaListFooter />}
         renderItem={(vacinas) => (
-          <VacinaContainer>
+          <VacinaContainer onPress={() => handleVacina(vacinas.item)}>
             <VacinaName>{vacinas.item.dependente}</VacinaName>
             <VacinaDependente>{vacinas.item.data}</VacinaDependente>
             <VacinaDataText>{vacinas.item.descricao}</VacinaDataText>
